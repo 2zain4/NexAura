@@ -1,22 +1,30 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
-const LangContext = createContext<any>(null);
+type Lang = "en" | "ar";
 
-export function LangProvider({ children }: any) {
-  const [lang, setLang] = useState("en");
+const LanguageContext = createContext<any>(null);
+
+export function LangProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLang] = useState<Lang>("en");
 
   useEffect(() => {
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.documentElement.lang = lang;
-  }, [lang]);
+    // 🧠 نجيب لغة الجهاز
+    const browserLang = navigator.language;
+
+    if (browserLang.startsWith("ar")) {
+      setLang("ar");
+    } else {
+      setLang("en");
+    }
+  }, []);
 
   return (
-    <LangContext.Provider value={{ lang, setLang }}>
+    <LanguageContext.Provider value={{ lang, setLang }}>
       {children}
-    </LangContext.Provider>
+    </LanguageContext.Provider>
   );
 }
 
-export const useLang = () => useContext(LangContext);
+export const useLang = () => useContext(LanguageContext);
